@@ -1,0 +1,41 @@
+language: python
+services:
+  - docker
+# The default distribution (ubuntu 14.04) don't support Python 3.7.
+matrix:
+  include:
+    - dist: trusty
+      python: "3.6"
+      script:
+        - make test-coverage
+        - make linters
+        - sonar-scanner
+    - dist: xenial
+      python: "3.7"
+      script: make test
+install:
+  - pip install -r requirements_dev.txt
+script: make test && make linters
+notifications:
+  email:
+    - opensource@system73.com
+deploy:
+  provider: pypi
+  user:
+    secure: "JCWyO1cD8jz+liNVYWjPrWS16WCowNvJNMK4c0aE7LLB+dIFZgZrVHBs0/2nPGUkuOyxWqdJW2yrD/L7WG0C+JEprM0wlOZZCftsADdC3ilHjYd11X8hA2R2VqdOSHRE2xUbpwILdP5XC8x3iHZqCIhW9W5/jS6YvEpYNNnvb10dqWdnFz0EPrYHSSW8PL6uv53gVHkdc3WELWeW4GD3sr2Kz232HHiGLsAAqYWOczMnZHfM41ItGfQCKrz0E5+wYiylJ6ERucSkZzNUg3ufD+LVUYJsrk2tCU1+Xn7pDl9HICrygTwr2tMUXrKlj/fkmarxF1PIS+EzRX8sa5vXd7jmsYkicSrl/57BiC2LgeGdZBjycRz/CYoC7V0NBzBpGawAiSms3z9VEhRKcVNtuJ7LKTH8zmWgWXwZ8xATDK7BBd8F/hH4toMMG5xr95QpKK9qToWPpO6wCrT61L01nM8xf48gzZQVKKcjHyD9twSuFMXk7qnnDzUtyiV3HkOR46OQFk3yxy5QtGf9nrtFLRGidxkj1dTTRiAjvTpWZzP8RWISLDlt7B6+n9+uCxbfa1Ur/4UxXojvSsyJF+DjQpEOp3sbBBA326S1u+VloNxB8ZJ1/f4xtsubBdmS1GfWSaie/3jbChfLorE469DePRSaEumhbegvIXJFhXvAIJE="
+  password:
+    secure: "IbUOa9mVCEMMgMLU/veLpzFwnDsNE4EH3NFnX+7l77XAXjhiIOQD11Lb74reuYiLs9FxOBzqW9qvS0kLA/XMJeU9uHo+U5C/namz4zwL24BFWRHxDt1jwp4GEKBFbXC6aZK+C/TBgmCAi+jYNjNCeN6GiJSlzw4oGmKPi6m+hbKDNXIpGnsWwZa4++0RaZDrs9VVrMPzKw7SRNc6RWTdyRDWHR+w7eeS6Nj2bTRmWVa2etsLzz31c5zhyHHOP0APbBLQJ4icMyGA9BUXq7N3VLfAAdnvpXiDbz/qj+qoYvWdn5ACzsAuX7XL0iMvCabHrDa6qiBnWcV/Jo2GKQMG7q0qOqlALZpzdvJui+ZEu/HpfHgu8yNE8fr35b4Vy+xqhMjVz/aghGseVM6Cdbgy5egBX+RgW71Edx6sElyGLTvRANXjbRGgHzrR0Uj/dmR/f8PB+G6+DDH9Ac+i1yYy2oyhKdgXtN5ABOY9rqbFWtiotA2tg5BXKSBkNcYb8M67cx3+mrSLMCqT5+W4OZXrVicDg9YLCpItRGzy8fo9kVbGOatNDomYTIJJz+keUEpxU9F/KA3N4GCXlG5TyHDZJ1nP/JHsAWurfgY95rm7EcKZiI4iCvxVl1cKk/CvkZ+VGke4KNr/gid56bFLpUc5b2nwBPffVyVVCxfwICWbqak="
+  # Necessary when the build has more than one job (Travis uses one job per Python version).
+  # With this setting only the first job upload the package to pypi, preventing the others from failing.
+  skip_existing: true
+  on:
+    tags: true
+    branch: master
+# Allow SonarCloud to access the full SCM history.
+git:
+  depth: false
+addons:
+  sonarcloud:
+    organization: "system73"
+    token:
+      secure: "bXLQkFScQATu9dg3CSd1N+rlB8RCM6fyntRq+ljlfQhlFQ/hm2pQMXEgqZPAJUK6oVsAu3z45huMn0uJXYiazOFAv8kDMc6ZPlDO8gfoP/P8dn9jugCnHwLHoOnb8LHFSkz8zNEPoFd60ToqrkyNRoT/ynBIljCGMqvk9FW5H2HYU3HIZhSstFB9IqKUA370dazE81jWnH8qzIAjyuFp94GCH+saRHENrYBGfFnwyTME9LXC7Cs+XDZaaKn8LqfLuu8zDlHH5xUM5QPzhMBkzMQBdHQDM47ay+vtGlQ/W0YagtCbfEs9dj0h1lPU2UANaKDDDRIeaw02lAJZoq7vtNIZVR1EyskBab3NlfzdpMWBviQCwyFe6+Zl/xM8INRbHSUesBozFwzkcmnvDRnsKw7FucHDhZUJc6e5BI+37fOrVmJw3DqQQ9fOj2+aQ8Z1jSsl4ocdDjdNsHDzioEjNYzlDnWkFg3YDeQgMMo3W4LMRE3Q/2HJPNmxs8sS9fGibG4QimxqWbmf5UlrRQ3wb/N2s6cvQ98aDM3rOrX7za2BSL3MByLDd+F6rOFAqa9nRT++Cdpj+dpKMWdKq3Z3hCkQa3AQw9O2Xpn8dbyZXjQyWiB1Uy/VwbpukzuILH4kW+kG+VV3oHa52+EeaBVlVFE1omUJgY8n/FWJxi0+Pbg="

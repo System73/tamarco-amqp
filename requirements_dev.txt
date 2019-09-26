@@ -1,0 +1,3 @@
+attrs>=17.4
+tamarco[ci]==0.*
+aioamqp==0.13.0
