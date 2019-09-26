@@ -1,0 +1,13 @@
+version: '2.2'
+
+services:
+  rabbitmq:
+    image: "rabbitmq:3.7"
+    container_name: "rabbitmq"
+    environment:
+      RABBITMQ_DEFAULT_USER: microservice
+      RABBITMQ_DEFAULT_PASS: 1234
+    ports:
+      - 5671:5671
+      - 5672:5672
+    restart: always
